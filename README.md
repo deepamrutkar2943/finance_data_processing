@@ -1,6 +1,6 @@
-# Finance Dashboard Backend
+# Finance Data Processing and Access Control Backend
 
-A role-based finance dashboard backend built with Java Spring Boot and MySQL. The system supports financial record management, user role management, dashboard analytics, and JWT-based authentication with full access control enforcement.
+A role-based Finance Data Processing and Access Control Backend dashboard built with Java Spring Boot and MySQL. The system supports financial record management, user role management, dashboard analytics, and JWT-based authentication with full access control enforcement.
 
 ---
 
