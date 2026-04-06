@@ -40,8 +40,8 @@ com.example.fdp.
 │   ├── custom                   # Custom exception classes
 │   ├── handler                  # Global exception handler
 │   └── response                 # Structured error response
-├── config                       # OpenAPI configuration
-└── constants                    # Application-wide constants
+└── config                       # OpenAPI configuration
+
 ```
 
 ---
@@ -55,7 +55,7 @@ com.example.fdp.
 
 ### Step 1 — Clone Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/deepamrutkar2943/finance_data_processing.git
 cd finance_data_processing
 ```
 
