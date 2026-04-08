@@ -41,7 +41,6 @@ com.example.fdp.
 │   ├── handler                  # Global exception handler
 │   └── response                 # Structured error response
 └── config                       # OpenAPI configuration
-
 ```
 
 ---
@@ -361,6 +360,56 @@ All dependencies are injected via constructor injection — the approach recomme
 | `LocalDate` used for transaction date | Transaction date is a business date, not a timestamp. `createdAt` is the system timestamp. |
 | Soft delete not implemented | Hard delete is used for simplicity. Soft delete would be a recommended enhancement for production. |
 | Amount must always be positive | Sign of the transaction is determined by `type` (INCOME/EXPENSE), not the amount value. |
+
+---
+
+## Cloud Server Deployment (Ubuntu 22.04)
+
+The application was tested on a cloud server running Ubuntu 22.04 (Jammy Jellyfish) with Java 21, Maven, and MySQL installed. Below are the issues encountered and how they were resolved.
+
+### 1. Port Permissions (Privileged Ports)
+Linux restricts ports below 1024 to root users. When switching from port 8080 to port 80 the application must be started with sudo:
+```bash
+sudo mvn spring-boot:run
+```
+
+### 2. Internal Verification
+To distinguish between an application error and a network error run a local request inside the server terminal. If it returns HTTP 200 the app is healthy and the problem is the external firewall:
+```bash
+curl -I http://localhost:80/swagger-ui/index.html
+```
+
+### 3. Cloud Firewall (Security Groups)
+Cloud providers block all inbound traffic by default. Add an inbound rule in the cloud console:
+```
+Type   → HTTP / Custom TCP
+Port   → 80 or 8080
+Source → 0.0.0.0/0 (Anywhere)
+```
+
+### 4. SSH Tunneling
+In restricted environments where firewall rules cannot be changed create a secure tunnel from your local machine to bypass the firewall:
+```bash
+# Run this on your local machine
+ssh -L 8080:localhost:80 cloud_user@<YOUR_CLOUD_IP>
+```
+Then access the app at:
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+### 5. MySQL Authentication (Socket vs Password)
+Ubuntu uses `auth_socket` by default which causes `Access denied for user 'root'@'localhost'`. Create a dedicated database user with standard password authentication:
+```sql
+CREATE USER 'finance_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON finance_db.* TO 'finance_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+Then update `application.properties`:
+```properties
+spring.datasource.username=finance_user
+spring.datasource.password=your_password
+```
 
 ---
 
